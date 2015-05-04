@@ -19,25 +19,27 @@
   (.setColor g color)
   (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
 
+(def color-map
+  {:black       (Color. 0 0 0)
+   :red         (Color. 157 9 102)
+   :dark-blue   (Color. 42 42 229)
+   :purple      (Color. 199 52 255)
+   :dark-green  (Color. 0 118 26)
+   :dark-gray   (Color. 128 128 128)
+   :medium-blue (Color. 13 161 255)
+   :light-blue  (Color. 170 170 255)
+   :brown       (Color. 85 85 0)
+   :orange      (Color. 242 94 0)
+   :light-gray  (Color. 192 192 192)
+   :pink        (Color. 255 137 229)
+   :light-green (Color. 56 203 0)
+   :yellow      (Color. 213 213 26)
+   :aqua        (Color. 98 246 153)
+   :white       (Color. 255 255 254)})
+
 (defn- color->awt-color
   [color]
-  (case color
-    :black (Color. 0 0 0)
-    :red (Color. 157 9 102)
-    :dark-blue (Color. 42 42 229)
-    :purple (Color. 199 52 255)
-    :dark-green (Color. 0 118 26)
-    :dark-gray (Color. 128 128 128)
-    :medium-blue (Color. 13 161 255)
-    :light-blue (Color. 170 170 255)
-    :brown (Color. 85 85 0)
-    :orange (Color. 242 94 0)
-    :light-gray (Color. 192 192 192)
-    :pink (Color. 255 137 229)
-    :light-green (Color. 56 203 0)
-    :yellow (Color. 213 213 26)
-    :aqua (Color. 98 246 153)
-    :white (Color. 255 255 254)))
+  (color color-map))
 
 (defn- plot-color
   [x y color g]
@@ -59,7 +61,11 @@
       (set-color raster x y :black)
       (.repaint panel)))
   (-color [_ color]
-    (reset! color-atom color))
+    (if (color color-map)
+      (do
+        (reset! color-atom color)
+        nil)
+      (str "Color must be from this list: " (sort (keys color-map)))))
   (-plot [_ x y]
     (set-color raster x y @color-atom)
     (.repaint panel))
