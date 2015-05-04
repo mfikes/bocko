@@ -1,5 +1,8 @@
 # Bocko
-Simple imperative graphics
+
+A small library making it extremely simple to play around with low-res graphics from Clojure.
+
+# Usage
 
 ```clojure
 (require 'bocko.core)
@@ -17,7 +20,11 @@ Simple imperative graphics
 (clear)         ;; clears screen
 ```
 
+# Demo
+
 [Watch a demo](https://youtu.be/piJPrP3BKIk) to see it in action.
+
+# Examples
 
 Draw an American flag:
 ```clojure
@@ -69,3 +76,7 @@ Animated bouncing ball using `loop`/`recur`:
     (Thread/sleep 50)
     (recur x' y' vx' vy')))
 ```
+
+# License
+
+Distributed under the Eclipse Public License, which is also used by ClojureScript.
