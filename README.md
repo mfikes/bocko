@@ -5,8 +5,7 @@ A small library making it extremely simple to play around with low-res graphics 
 # Usage
 
 ```clojure
-(require 'bocko.core)
-(use 'bocko.core)
+(require ['bocko.core :refer :all])
 
 (plot 2 3)      ;; plots a point on the screen
 
