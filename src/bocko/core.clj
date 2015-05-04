@@ -66,12 +66,14 @@
   (-plot [_ x y]
     (set-color raster x y @color-atom)
     (.repaint panel))
-  (-hlin [s x1 x2 y]
+  (-hlin [_ x1 x2 y]
     (doseq [x (range x1 (inc x2))]
-      (-plot s x y)))
-  (-vlin [s y1 y2 x]
+      (set-color raster x y @color-atom))
+    (.repaint panel))
+  (-vlin [_ y1 y2 x]
     (doseq [y (range y1 (inc y2))]
-      (-plot s x y)))
+      (set-color raster x y @color-atom))
+    (.repaint panel))
   (-scrn [_ x y]
     (get-color raster x y)))
 
