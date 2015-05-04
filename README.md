@@ -16,3 +16,5 @@ Simple imperative graphics
 
 (clear)         ;; clears screen
 ```
+
+[Watch a demo](https://youtu.be/piJPrP3BKIk) to see it in actino.
