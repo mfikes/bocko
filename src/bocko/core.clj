@@ -60,12 +60,9 @@
             y (range height)]
       (set-color raster x y :black)
       (.repaint panel)))
-  (-color [_ color]
-    (if (color color-map)
-      (do
-        (reset! color-atom color)
-        nil)
-      (str "Color must be from this list: " (sort (keys color-map)))))
+  (-color [_ c]
+    (reset! color-atom c)
+    nil)
   (-plot [_ x y]
     (set-color raster x y @color-atom)
     (.repaint panel))
@@ -113,26 +110,49 @@
   (-clear *screen*))
 
 (defn color
-  "Sets the color for plotting."
+  "Sets the color for plotting.
+
+  The color must be one of the following:
+
+  :black        :red        :dark-blue    :purple
+  :dark-green   :dark-gray  :medium-blue  :light-blue
+  :brown        :orange     :light-gray   :pink
+  :light-green  :yellow     :aqua         :white"
   [c]
+  {:pre [(c #{:black :red :dark-blue :purple
+              :dark-green :dark-gray :medium-blue :light-blue
+              :brown :orange :light-gray :pink
+              :light-green :yellow :aqua :white})]}
   (-color *screen* c))
 
 (defn plot
-  "Plots a point at (x, y)."
+  "Plots a point at a given x and y.
+
+  Both x and y must be between 0 and 39."
   [x y]
+  {:pre [(<= 0 x 39) (<= 0 y 39)]}
   (-plot *screen* x y))
 
 (defn hlin
-  "Plots a horizontal line from x1 to x2 at y."
-  [x1 x2 y]
-  (-hlin *screen* x1 x2 y))
+  "Plots a horizontal line from x-1 to x-2 at a given y.
+
+  The x and y numbers must be between 0 and 39."
+  [x-1 x-2 y]
+  {:pre [(<= 0 x-1 39) (<= 0 x-2 39) (< x-1 x-2) (<= 0 y 39)]}
+  (-hlin *screen* x-1 x-2 y))
 
 (defn vlin
-  "Plots a vertical line from y1 to y2 at x."
-  [y1 y2 x]
-  (-vlin *screen* y1 y2 x))
+  "Plots a vertical line from y-1 to y-2 at a given x.
+
+  The x and y numbers must be between 0 and 39."
+  [y-1 y-2 x]
+  {:pre [(<= 0 y-1 39) (<= 0 y-2 39) (< y-1 y-2) (<= 0 x 39)]}
+  (-vlin *screen* y-1 y-2 x))
 
 (defn scrn
-  "Gets the color at (x, y)."
+  "Gets the color at a given x and y.
+
+  Both x and y must be between 0 and 39."
   [x y]
+  {:pre [(<= 0 x 39) (<= 0 y 39)]}
   (-scrn *screen* x y))
