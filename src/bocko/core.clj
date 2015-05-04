@@ -132,7 +132,7 @@
 
   Both x and y must be between 0 and 39."
   [x y]
-  {:pre [(<= 0 x 39) (<= 0 y 39)]}
+  {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
   (-plot *screen* x y))
 
 (defn hlin
@@ -140,7 +140,7 @@
 
   The x and y numbers must be between 0 and 39."
   [x-1 x-2 y]
-  {:pre [(<= 0 x-1 39) (<= 0 x-2 39) (< x-1 x-2) (<= 0 y 39)]}
+  {:pre [(integer? x-1) (integer? x-2) (integer? y) (<= 0 x-1 39) (<= 0 x-2 39) (< x-1 x-2) (<= 0 y 39)]}
   (-hlin *screen* x-1 x-2 y))
 
 (defn vlin
@@ -148,7 +148,7 @@
 
   The x and y numbers must be between 0 and 39."
   [y-1 y-2 x]
-  {:pre [(<= 0 y-1 39) (<= 0 y-2 39) (< y-1 y-2) (<= 0 x 39)]}
+  {:pre [(integer? y-1) (integer? y-2) (integer? x) (<= 0 y-1 39) (<= 0 y-2 39) (< y-1 y-2) (<= 0 x 39)]}
   (-vlin *screen* y-1 y-2 x))
 
 (defn scrn
@@ -156,5 +156,5 @@
 
   Both x and y must be between 0 and 39."
   [x y]
-  {:pre [(<= 0 x 39) (<= 0 y 39)]}
+  {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
   (-scrn *screen* x y))
