@@ -59,6 +59,8 @@ Draw an American flag:
 Animated bouncing ball using `loop`/`recur`:
 ```clojure
 (loop [x 5 y 23 vx 1 vy 1]
+  ; First determine new location and velocity,
+  ; reversing direction if bouncing off edge.
   (let [x' (+ x vx)
         y' (+ y vy)
         vx' (if (zero? (rem x' 40))
@@ -73,6 +75,7 @@ Animated bouncing ball using `loop`/`recur`:
     ; Draw ball in new location
     (color :dark-blue)
     (plot x' y')
+    ; Sleep a little and then loop around again
     (Thread/sleep 50)
     (recur x' y' vx' vy')))
 ```
