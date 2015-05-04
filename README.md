@@ -22,7 +22,9 @@ A small library making it extremely simple to play around with low-res graphics 
 
 # Demo
 
-[Watch a demo](https://youtu.be/piJPrP3BKIk) to see it in action.
+Watch a demo to see it in action:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/piJPrP3BKIk/1.jpg)](http://www.youtube.com/watch?v=piJPrP3BKIk "Bocko Clojure simple graphics")
 
 # Examples
 
