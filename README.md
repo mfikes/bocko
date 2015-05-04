@@ -63,12 +63,8 @@ Animated bouncing ball using `loop`/`recur`:
   ; reversing direction if bouncing off edge.
   (let [x' (+ x vx)
         y' (+ y vy)
-        vx' (if (zero? (rem x' 40))
-              (- vx)
-              vx)
-        vy' (if (zero? (rem y' 40))
-              (- vy)
-              vy)]
+        vx' (if (zero? (rem x' 40)) (- vx) vx)
+        vy' (if (zero? (rem y' 40)) (- vy) vy)]
     ; Erase drawing at previous location              
     (color :black)
     (plot x y)
