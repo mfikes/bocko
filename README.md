@@ -21,7 +21,7 @@ A small library making it extremely simple to play around with low-res graphics 
 (clear)         ;; clears screen
 ```
 
-Commands comprise `color, plot, scrn, hlin, vlin, clear` and `doc` is availaable for each.
+Commands comprise `color`, `plot`, `scrn`, `hlin`, `vlin`, and `clear`. And `doc` is available for each.
 
 # Demo
 
