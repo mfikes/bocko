@@ -59,6 +59,24 @@ Draw an American flag:
   (plot x y))
 ```
 
+Display all the colors:
+
+```clojure
+(doseq [[c n] (map vector
+                   [:black        :red        :dark-blue    :purple
+                    :dark-green   :dark-gray  :medium-blue  :light-blue
+                    :brown        :orange     :light-gray   :pink
+                    :light-green  :yellow     :aqua         :white]
+                   (range))]
+  (color c)
+  (let [x' (* 10 (rem n 4))
+        y' (* 10 (quot n 4))]
+    (doseq [x (range x' (+ 10 x'))
+            y (range y' (+ 10 y'))]
+      (plot x y))))
+```
+
+
 Animated bouncing ball using `loop`/`recur`:
 ```clojure
 (loop [x 5 y 23 vx 1 vy 1]
