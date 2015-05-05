@@ -4,6 +4,8 @@ A small library making it extremely simple to play around with low-res graphics 
 
 # Usage
 
+[![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
+
 ```clojure
 (require ['bocko.core :refer :all])
 
