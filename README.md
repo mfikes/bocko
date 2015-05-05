@@ -33,15 +33,15 @@ Draw an American flag:
 ```clojure
 ;; Draw 13 stripes cycling over red/white
 
-(doseq [[stripe-number stripe-color]
+(doseq [[n c]
         (take 13
-          (map vector
-            (range)
-            (cycle [:red :white])))]
-  (color stripe-color)
+              (map vector
+                   (range)
+                   (cycle [:red :white])))]
+  (color c)
   (let [x1 10
         x2 25
-        y (+ 10 stripe-number)]
+        y (+ 10 n)]
     (hlin x1 x2 y)))
 
 ;; Fill in a dark blue field in the corner
