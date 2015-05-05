@@ -81,4 +81,4 @@ Animated bouncing ball using `loop`/`recur`:
 
 # License
 
-Distributed under the Eclipse Public License, which is also used by ClojureScript.
+Distributed under the Eclipse Public License, which is also used by Clojure.
