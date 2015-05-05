@@ -21,23 +21,7 @@ A small library making it extremely simple to play around with low-res graphics 
 (clear)         ;; clears screen
 ```
 
-Commands comprise `color`, `plot`, `scrn`, `hlin`, `vlin`, and `clear`. And `doc` is available for each.
-
-```
-user=> (doc color)
--------------------------
-bocko.core/color
-([c])
-  Sets the color for plotting.
-
-  The color must be one of the following:
-
-  :black        :red        :dark-blue    :purple
-  :dark-green   :dark-gray  :medium-blue  :light-blue
-  :brown        :orange     :light-gray   :pink
-  :light-green  :yellow     :aqua         :white
-nil
-```
+Commands comprise `color`, `plot`, `scrn`, `hlin`, `vlin`, and `clear`.
 
 # Demo
 
