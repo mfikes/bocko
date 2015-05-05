@@ -97,6 +97,22 @@ Animated bouncing ball using `loop`/`recur`:
     (recur x' y' vx' vy')))
 ```
 
+Random colors and locations:
+```clojure
+(loop []
+  (let [c (rand-nth [:black        :red        :dark-blue    :purple
+                     :dark-green   :dark-gray  :medium-blue  :light-blue
+                     :brown        :orange     :light-gray   :pink
+                     :light-green  :yellow     :aqua         :white])
+        x (rand-int 40)
+        y (rand-int 40)]
+    (color c)
+    (plot x y)
+    (Thread/sleep 1)
+    (recur)))
+```
+
+
 # License
 
 Distributed under the Eclipse Public License, which is also used by Clojure.
