@@ -2,24 +2,17 @@
   (:import (javax.swing JFrame JPanel)
            (java.awt Color Dimension)))
 
-(defprotocol IScreen
-  "A screen to be drawn upon."
-  (-clear [_] "Clears this screen to be black.")
-  (-color [_ color] "Sets the color for plotting.")
-  (-plot [_ x y] "Plots a point at (x, y).")
-  (-hlin [_ x1 x2 y] "Plots a horizontal line from x1 to x2 at y.")
-  (-vlin [_ y1 y2 x] "Plots a vertical line from y1 to y2 at x.")
-  (-scrn [_ x y] "Gets the color at (x, y)."))
+(def ^:private width 40)
+(def ^:private height 40)
+(def ^:private pixel-width 28)
+(def ^:private pixel-height 16)
+(def ^:private clear-color :black)
+(def ^:private default-color :white)
+(def ^:private clear-screen (vec (repeat height (vec (repeat width clear-color)))))
 
-(def pixel-width 28)
-(def pixel-height 16)
+(defonce ^:private raster (atom clear-screen))
 
-(defn- paint-point
-  [g x y color]
-  (.setColor g color)
-  (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
-
-(def color-map
+(def ^:private color-map
   {:black       (Color. 0 0 0)
    :red         (Color. 157 9 102)
    :dark-blue   (Color. 42 42 229)
@@ -37,79 +30,26 @@
    :aqua        (Color. 98 246 153)
    :white       (Color. 255 255 254)})
 
-(defn- color->awt-color
-  [color]
-  (color color-map))
-
-(defn- plot-color
-  [x y color g]
-  (paint-point g x y (color->awt-color color)))
-
-(defn- set-color
-  [raster x y color]
-  (swap! raster assoc-in [x y] color))
-
-(defn- get-color
-  [raster x y]
-  (get-in @raster [x y]))
-
-(defrecord JPanelScreen [panel width height color-atom raster]
-  IScreen
-  (-clear [_]
-    (doseq [x (range width)
-            y (range height)]
-      (set-color raster x y :black)
-      (.repaint panel)))
-  (-color [_ c]
-    (reset! color-atom c)
-    nil)
-  (-plot [_ x y]
-    (set-color raster x y @color-atom)
-    (.repaint panel))
-  (-hlin [_ x1 x2 y]
-    (doseq [x (range x1 (inc x2))]
-      (set-color raster x y @color-atom))
-    (.repaint panel))
-  (-vlin [_ y1 y2 x]
-    (doseq [y (range y1 (inc y2))]
-      (set-color raster x y @color-atom))
-    (.repaint panel))
-  (-scrn [_ x y]
-    (get-color raster x y)))
-
-(defn- make-screen
-  []
-  (let [width 40
-        height 40
-        raster (atom (vec (repeat height (vec (repeat width :black)))))
-        frame (JFrame. "Bocko")
-        panel (proxy [JPanel] []
-                (paintComponent [g]
-                  (proxy-super paintComponent g)
-                  (doseq [x (range width)
-                          y (range height)]
-                    (plot-color x y (get-in @raster [x y]) g)))
-                (getPreferredSize []
-                  (Dimension. (* width pixel-width)
-                              (* height pixel-height))))
-        screen (JPanelScreen.
-                 panel
-                 width
-                 height
-                 (atom :white)
-                 raster)]
-    (doto frame
-      (.add panel)
-      (.pack)
-      (.setVisible true))
-    screen))
-
-(def ^:dynamic *screen* (make-screen))
-
 (defn clear
-  "Clears this screen to be black."
+  "Clears this screen."
   []
-  (-clear *screen*))
+  (reset! raster clear-screen)
+  nil)
+
+(def ^:dynamic *color* "The color used for plotting." default-color)
+
+(defn- get-current-color
+  []
+  (let [c *color*]
+    (if (contains? color-map c)
+      c
+      default-color)))
+
+(defn- set-current-color
+  [c]
+  (if (thread-bound? #'*color*)
+    (set! *color* c)
+    (alter-var-root #'*color* (constantly c))))
 
 (defn color
   "Sets the color for plotting.
@@ -125,7 +65,8 @@
               :dark-green :dark-gray :medium-blue :light-blue
               :brown :orange :light-gray :pink
               :light-green :yellow :aqua :white})]}
-  (-color *screen* c))
+  (set-current-color c)
+  nil)
 
 (defn plot
   "Plots a point at a given x and y.
@@ -133,27 +74,36 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (-plot *screen* x y))
+  (swap! raster assoc-in [x y] (get-current-color))
+  nil)
+
+(defn- lin
+  [x1 x2 y f]
+  (if (< x2 x1)
+    (lin x2 x1 y f)
+    (let [c (get-current-color)]
+      (swap! raster
+        #(reduce (fn [r x]
+                   (assoc-in r (f [x y]) c))
+          %
+          (range x1 (inc x2))))
+      nil)))
 
 (defn hlin
-  "Plots a horizontal line from x-1 to x-2 at a given y.
+  "Plots a horizontal line from x1 to x2 at a given y.
 
   The x and y numbers must be between 0 and 39."
-  [x-1 x-2 y]
-  {:pre [(integer? x-1) (integer? x-2) (integer? y) (<= 0 x-1 39) (<= 0 x-2 39) (<= 0 y 39)]}
-  (if (< x-2 x-1)
-    (hlin x-2 x-1 y)
-    (-hlin *screen* x-1 x-2 y)))
+  [x1 x2 y]
+  {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
+  (lin x1 x2 y identity))
 
 (defn vlin
-  "Plots a vertical line from y-1 to y-2 at a given x.
+  "Plots a vertical line from y1 to y2 at a given x.
 
   The x and y numbers must be between 0 and 39."
-  [y-1 y-2 x]
-  {:pre [(integer? y-1) (integer? y-2) (integer? x) (<= 0 y-1 39) (<= 0 y-2 39) (<= 0 x 39)]}
-  (if (< y-2 y-1)
-    (vlin y-2 y-1 x)
-    (-vlin *screen* y-1 y-2 x)))
+  [y1 y2 x]
+  {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
+  (lin y1 y2 x reverse))
 
 (defn scrn
   "Gets the color at a given x and y.
@@ -161,4 +111,33 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (-scrn *screen* x y))
+  (get-in @raster [x y]))
+
+(defn- make-panel
+  [raster]
+  (let [frame (JFrame. "Bocko")
+        paint-point
+        (fn [x y c g]
+          (.setColor g (c color-map))
+          (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
+        panel (proxy [JPanel] []
+                (paintComponent [g]
+                  (proxy-super paintComponent g)
+                  (let [r @raster]
+                    (doseq [x (range width)
+                            y (range height)]
+                      (paint-point x y (get-in r [x y]) g))))
+                (getPreferredSize []
+                  (Dimension. (* width pixel-width)
+                    (* height pixel-height))))]
+    (doto frame
+      (.add panel)
+      (.pack)
+      (.setVisible true))
+    (add-watch raster :monitor
+      (fn [_ _ o n]
+        (when (not= o n)
+          (.repaint panel))))
+    panel))
+
+(defonce ^:private panel (make-panel raster))

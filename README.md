@@ -111,6 +111,22 @@ Random colors and locations:
     (recur)))
 ```
 
+# Multi-threading
+
+You can use Bocko from multiple threads. The underlying canvas is thread-safe.
+
+In that scenario, establishing thread-local bindings for the `*color*` dynamic var will allow each thread to plot independently. For example, the following code will not interfere with the color being used for plotting in other threads:
+
+```clojure
+(future
+  (binding [*color* :orange]
+    (plot 3 3)                ; Will plot an orange point
+    (set! *color* :aqua)
+    (plot 4 4)))              ; Will plot an aqua point
+```
+
+In fact, a form like `(color :red)` is just a simple wrapper that will set a thread-local binding if one is in effect, otherwise it will set the root binding.
+
 
 # License
 
