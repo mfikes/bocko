@@ -1,4 +1,4 @@
-(defproject bocko "0.1.0"
+(defproject bocko "0.2.0"
   :description "Simple imperative graphics"
   :url "https://github.com/mfikes/bocko"
   :license {:name "Eclipse Public License"
