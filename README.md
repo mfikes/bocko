@@ -7,7 +7,7 @@ A small library making it extremely simple to play around with low-res graphics 
 [![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
 
 ```clojure
-(require ['bocko.core :refer :all])
+(require '[bocko.core :refer :all])
 
 (plot 2 3)      ;; plots a point on the screen
 
@@ -126,6 +126,98 @@ In that scenario, establishing thread-local bindings for the `*color*` dynamic v
 ```
 
 In fact, a form like `(color :red)` is just a simple wrapper that will set a thread-local binding if one is in effect, otherwise it will set the root binding.
+
+Here is an example. This makes use of thread-local bindings and "does the right thing".
+
+```clojure
+(do
+
+  ;; Repeatedly display all the colors
+
+  (future
+    (loop []
+      (clear)
+      (doseq [[c n] (map vector
+                      [:black :red :dark-blue :purple
+                       :dark-green :dark-gray :medium-blue :light-blue
+                       :brown :orange :light-gray :pink
+                       :light-green :yellow :aqua :white]
+                      (range))]
+        (binding [*color* c]
+          (let [x' (* 10 (rem n 4))
+                y' (* 10 (quot n 4))]
+            (doseq [x (range x' (+ 10 x'))
+                    y (range y' (+ 10 y'))]
+              (plot x y)
+              (Thread/sleep 1)))))
+      (recur)))
+
+  ;; Add a bouncing ball
+
+  (future
+    (loop [x 5 y 23 vx 1 vy 1]
+      ; First determine new location and velocity,
+      ; reversing direction if bouncing off edge.
+      (let [x' (+ x vx)
+            y' (+ y vy)
+            vx' (if (< 0 x' 39) vx (- vx))
+            vy' (if (< 0 y' 39) vy (- vy))]
+        ; Erase drawing at previous location
+        (binding [*color* :black]
+          (plot x y))
+        ; Draw ball in new location
+        (binding [*color* :dark-blue]
+          (plot x' y'))
+        ; Sleep a little and then loop around again
+        (Thread/sleep 50)
+        (recur x' y' vx' vy')))))
+```
+
+This, on the other hand, illustrates contention / interference with the color being used for plotting.
+
+```clojure
+(do
+
+  ;; Repeatedly display all the colors
+
+  (future
+    (loop []
+      (clear)
+      (doseq [[c n] (map vector
+                      [:black :red :dark-blue :purple
+                       :dark-green :dark-gray :medium-blue :light-blue
+                       :brown :orange :light-gray :pink
+                       :light-green :yellow :aqua :white]
+                      (range))]
+        (color c)
+        (let [x' (* 10 (rem n 4))
+              y' (* 10 (quot n 4))]
+          (doseq [x (range x' (+ 10 x'))
+                  y (range y' (+ 10 y'))]
+            (plot x y)
+            (Thread/sleep 1))))
+      (recur)))
+
+  ;; Add a bouncing ball
+
+  (future
+    (loop [x 5 y 23 vx 1 vy 1]
+      ; First determine new location and velocity,
+      ; reversing direction if bouncing off edge.
+      (let [x' (+ x vx)
+            y' (+ y vy)
+            vx' (if (< 0 x' 39) vx (- vx))
+            vy' (if (< 0 y' 39) vy (- vy))]
+        ; Erase drawing at previous location
+        (color :black)
+        (plot x y)
+        ; Draw ball in new location
+        (color :dark-blue)
+        (plot x' y')
+        ; Sleep a little and then loop around again
+        (Thread/sleep 50)
+        (recur x' y' vx' vy')))))
+```
 
 
 # License
