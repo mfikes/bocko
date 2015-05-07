@@ -37,8 +37,7 @@
   nil)
 
 (defonce ^:dynamic
-  ^{:private true
-    :doc     "The color used for plotting."}
+  ^{:doc     "The color used for plotting."}
   *color* default-color)
 
 (set-validator! #'*color*
