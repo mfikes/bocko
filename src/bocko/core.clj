@@ -38,12 +38,12 @@
 
 (def ^:dynamic *color* "The color used for plotting." default-color)
 
+(set-validator! #'*color*
+                (fn [c] (contains? color-map c)))
+
 (defn- get-current-color
   []
-  (let [c *color*]
-    (if (contains? color-map c)
-      c
-      default-color)))
+  *color*)
 
 (defn- set-current-color
   [c]
