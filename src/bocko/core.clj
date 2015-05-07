@@ -61,7 +61,8 @@
   :brown        :orange     :light-gray   :pink
   :light-green  :yellow     :aqua         :white"
   [c]
-  {:pre [(c #{:black :red :dark-blue :purple
+  {:pre [(keyword? c)
+         (c #{:black :red :dark-blue :purple
               :dark-green :dark-gray :medium-blue :light-blue
               :brown :orange :light-gray :pink
               :light-green :yellow :aqua :white})]}
