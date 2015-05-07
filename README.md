@@ -127,7 +127,7 @@ In that scenario, establishing thread-local bindings for the `*color*` dynamic v
 
 In fact, a form like `(color :red)` is just a simple wrapper that will set a thread-local binding if one is in effect, otherwise it will set the root binding.
 
-Here is an example. This makes use of thread-local bindings and "does the right thing".
+Here is an example. This makes use of thread-local bindings and "does the right thing":
 
 ```clojure
 (do
@@ -173,7 +173,7 @@ Here is an example. This makes use of thread-local bindings and "does the right 
         (recur x' y' vx' vy')))))
 ```
 
-This, on the other hand, illustrates contention / interference with the color being used for plotting.
+This, on the other hand, illustrates contention / interference with the color being used for plotting:
 
 ```clojure
 (do
