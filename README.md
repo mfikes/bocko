@@ -173,7 +173,7 @@ Here is an example. This makes use of thread-local bindings and "does the right 
         (recur x' y' vx' vy')))))
 ```
 
-This, on the other hand, illustrates contention / interfernece with the color being used for plotting.
+This, on the other hand, illustrates contention / interference with the color being used for plotting.
 
 ```clojure
 (do
