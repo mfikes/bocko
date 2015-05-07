@@ -36,7 +36,10 @@
   (reset! raster clear-screen)
   nil)
 
-(def ^:dynamic *color* "The color used for plotting." default-color)
+(defonce ^:dynamic
+  ^{:private true
+    :doc     "The color used for plotting."}
+  *color* default-color)
 
 (set-validator! #'*color*
                 (fn [c] (contains? color-map c)))
