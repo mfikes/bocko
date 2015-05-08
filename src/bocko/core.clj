@@ -70,7 +70,7 @@
     (alter-var-root #'*color* (constantly c)))
   nil)
 
-(defn- plot-fn
+(defn- plot*
   [r x y c]
   (assoc-in r [x y] c))
 
@@ -81,7 +81,7 @@
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
   (force panel)
-  (swap! raster plot-fn x y *color*)
+  (swap! raster plot* x y *color*)
   nil)
 
 (defn- lin
@@ -93,7 +93,7 @@
       r
       (range a1 (inc a2)))))
 
-(defn- hlin-fn
+(defn- hlin*
   [r x1 x2 y c]
   (lin r x1 x2 y c identity))
 
@@ -104,10 +104,10 @@
   [x1 x2 y]
   {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
   (force panel)
-  (swap! raster hlin-fn x1 x2 y *color*)
+  (swap! raster hlin* x1 x2 y *color*)
   nil)
 
-(defn- vlin-fn
+(defn- vlin*
   [r y1 y2 x c]
   (lin r y1 y2 x c reverse))
 
@@ -118,10 +118,10 @@
   [y1 y2 x]
   {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
   (force panel)
-  (swap! raster vlin-fn y1 y2 x *color*)
+  (swap! raster vlin* y1 y2 x *color*)
   nil)
 
-(defn- scrn-fn
+(defn- scrn*
   [r x y]
   (get-in r [x y]))
 
@@ -132,4 +132,4 @@
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
   (force panel)
-  (scrn-fn @raster x y))
+  (scrn* @raster x y))
