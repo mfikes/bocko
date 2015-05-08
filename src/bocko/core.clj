@@ -46,18 +46,8 @@
   ^{:doc     "The color used for plotting."}
   *color* default-color)
 
-#(set-validator! #'*color*
+(set-validator! #'*color*
                 (fn [c] (contains? color-map c)))
-
-(defn- get-current-color
-  []
-  *color*)
-
-(defn- set-current-color
-  [c]
-  (if (thread-bound? #'*color*)
-    (set! *color* c)
-    (alter-var-root #'*color* (constantly c))))
 
 (defn color
   "Sets the color for plotting.
@@ -75,7 +65,9 @@
               :brown :orange :light-gray :pink
               :light-green :yellow :aqua :white})]}
   (force panel)
-  (set-current-color c)
+  (if (thread-bound? #'*color*)
+    (set! *color* c)
+    (alter-var-root #'*color* (constantly c)))
   nil)
 
 (defn- plot-fn
@@ -89,7 +81,7 @@
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
   (force panel)
-  (swap! raster plot-fn x y (get-current-color))
+  (swap! raster plot-fn x y *color*)
   nil)
 
 (defn- lin
@@ -112,7 +104,7 @@
   [x1 x2 y]
   {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
   (force panel)
-  (swap! raster hlin-fn x1 x2 y (get-current-color))
+  (swap! raster hlin-fn x1 x2 y *color*)
   nil)
 
 (defn- vlin-fn
@@ -126,7 +118,7 @@
   [y1 y2 x]
   {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
   (force panel)
-  (swap! raster vlin-fn y1 y2 x (get-current-color))
+  (swap! raster vlin-fn y1 y2 x *color*)
   nil)
 
 (defn- scrn-fn
