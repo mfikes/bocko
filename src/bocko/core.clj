@@ -1,6 +1,4 @@
-(ns bocko.core
-  (:import (javax.swing JFrame JPanel)
-           (java.awt Color Dimension)))
+(ns bocko.core)
 
 (def ^:private ^:const width 40)
 (def ^:private ^:const height 40)
@@ -10,54 +8,32 @@
 (def ^:private default-color :white)
 (def ^:private clear-screen (vec (repeat height (vec (repeat width clear-color)))))
 
-(def ^:private color-map
-  {:black       (Color. 0 0 0)
-   :red         (Color. 157 9 102)
-   :dark-blue   (Color. 42 42 229)
-   :purple      (Color. 199 52 255)
-   :dark-green  (Color. 0 118 26)
-   :dark-gray   (Color. 128 128 128)
-   :medium-blue (Color. 13 161 255)
-   :light-blue  (Color. 170 170 255)
-   :brown       (Color. 85 85 0)
-   :orange      (Color. 242 94 0)
-   :light-gray  (Color. 192 192 192)
-   :pink        (Color. 255 137 229)
-   :light-green (Color. 56 203 0)
-   :yellow      (Color. 213 213 26)
-   :aqua        (Color. 98 246 153)
-   :white       (Color. 255 255 254)})
-
 (defonce ^:private raster (atom clear-screen))
 
-(defn- make-panel
-  []
-  (let [frame (JFrame. "Bocko")
-        paint-point
-        (fn [x y c g]
-          (.setColor g (c color-map))
-          (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
-        panel (proxy [JPanel] []
-                (paintComponent [g]
-                  (proxy-super paintComponent g)
-                  (let [r @raster]
-                    (doseq [x (range width)
-                            y (range height)]
-                      (paint-point x y (get-in r [x y]) g))))
-                (getPreferredSize []
-                  (Dimension. (* width pixel-width)
-                    (* height pixel-height))))]
-    (doto frame
-      (.add panel)
-      (.pack)
-      (.setVisible true))
-    (add-watch raster :monitor
-      (fn [_ _ o n]
-        (when (not= o n)
-          (.repaint panel))))
-    panel))
+(def ^:private color-map
+  {:black       [0 0 0]
+   :red         [157 9 102]
+   :dark-blue   [42 42 229]
+   :purple      [199 52 255]
+   :dark-green  [0 118 26]
+   :dark-gray   [128 128 128]
+   :medium-blue [13 161 255]
+   :light-blue  [170 170 255]
+   :brown       [85 85 0]
+   :orange      [242 94 0]
+   :light-gray  [192 192 192]
+   :pink        [255 137 229]
+   :light-green [56 203 0]
+   :yellow      [213 213 26]
+   :aqua        [98 246 153]
+   :white       [255 255 254]})
 
-(def ^:private panel (delay (make-panel)))
+(defonce ^:private panel
+  (delay
+    (do
+      (require 'bocko.swing)
+      (let [make-panel (eval 'bocko.swing/make-panel)]
+        (make-panel color-map raster width height pixel-width pixel-height)))))
 
 (defn clear
   "Clears this screen."
@@ -70,7 +46,7 @@
   ^{:doc     "The color used for plotting."}
   *color* default-color)
 
-(set-validator! #'*color*
+#(set-validator! #'*color*
                 (fn [c] (contains? color-map c)))
 
 (defn- get-current-color
