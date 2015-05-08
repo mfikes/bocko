@@ -10,8 +10,6 @@
 (def ^:private default-color :white)
 (def ^:private clear-screen (vec (repeat height (vec (repeat width clear-color)))))
 
-(defonce ^:private raster (atom clear-screen))
-
 (def ^:private color-map
   {:black       (Color. 0 0 0)
    :red         (Color. 157 9 102)
@@ -30,9 +28,41 @@
    :aqua        (Color. 98 246 153)
    :white       (Color. 255 255 254)})
 
+(defonce ^:private raster (atom clear-screen))
+
+(defn- make-panel
+  []
+  (let [frame (JFrame. "Bocko")
+        paint-point
+        (fn [x y c g]
+          (.setColor g (c color-map))
+          (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
+        panel (proxy [JPanel] []
+                (paintComponent [g]
+                  (proxy-super paintComponent g)
+                  (let [r @raster]
+                    (doseq [x (range width)
+                            y (range height)]
+                      (paint-point x y (get-in r [x y]) g))))
+                (getPreferredSize []
+                  (Dimension. (* width pixel-width)
+                    (* height pixel-height))))]
+    (doto frame
+      (.add panel)
+      (.pack)
+      (.setVisible true))
+    (add-watch raster :monitor
+      (fn [_ _ o n]
+        (when (not= o n)
+          (.repaint panel))))
+    panel))
+
+(def ^:private panel (delay (make-panel)))
+
 (defn clear
   "Clears this screen."
   []
+  (force panel)
   (reset! raster clear-screen)
   nil)
 
@@ -68,6 +98,7 @@
               :dark-green :dark-gray :medium-blue :light-blue
               :brown :orange :light-gray :pink
               :light-green :yellow :aqua :white})]}
+  (force panel)
   (set-current-color c)
   nil)
 
@@ -81,6 +112,7 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
+  (force panel)
   (swap! raster plot-fn x y (get-current-color))
   nil)
 
@@ -103,6 +135,7 @@
   The x and y numbers must be between 0 and 39."
   [x1 x2 y]
   {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
+  (force panel)
   (swap! raster hlin-fn x1 x2 y (get-current-color))
   nil)
 
@@ -116,6 +149,7 @@
   The x and y numbers must be between 0 and 39."
   [y1 y2 x]
   {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
+  (force panel)
   (swap! raster vlin-fn y1 y2 x (get-current-color))
   nil)
 
@@ -129,33 +163,5 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
+  (force panel)
   (scrn-fn @raster x y))
-
-(defn- make-panel
-  [raster]
-  (let [frame (JFrame. "Bocko")
-        paint-point
-        (fn [x y c g]
-          (.setColor g (c color-map))
-          (.fillRect g (* x pixel-width) (* y pixel-height) pixel-width pixel-height))
-        panel (proxy [JPanel] []
-                (paintComponent [g]
-                  (proxy-super paintComponent g)
-                  (let [r @raster]
-                    (doseq [x (range width)
-                            y (range height)]
-                      (paint-point x y (get-in r [x y]) g))))
-                (getPreferredSize []
-                  (Dimension. (* width pixel-width)
-                    (* height pixel-height))))]
-    (doto frame
-      (.add panel)
-      (.pack)
-      (.setVisible true))
-    (add-watch raster :monitor
-      (fn [_ _ o n]
-        (when (not= o n)
-          (.repaint panel))))
-    panel))
-
-(defonce ^:private panel (make-panel raster))
