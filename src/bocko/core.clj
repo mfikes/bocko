@@ -71,26 +71,31 @@
   (set-current-color c)
   nil)
 
+(defn- plot-fn
+  [r x y c]
+  (assoc-in r [x y] c))
+
 (defn plot
   "Plots a point at a given x and y.
 
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (swap! raster assoc-in [x y] (get-current-color))
+  (swap! raster plot-fn x y (get-current-color))
   nil)
 
 (defn- lin
-  [x1 x2 y f]
-  (if (< x2 x1)
-    (lin x2 x1 y f)
-    (let [c (get-current-color)]
-      (swap! raster
-        #(reduce (fn [r x]
-                   (assoc-in r (f [x y]) c))
-          %
-          (range x1 (inc x2))))
-      nil)))
+  [r a1 a2 b c f]
+  (if (< a2 a1)
+    (lin r a2 a1 b c f)
+    (reduce (fn [r x]
+              (assoc-in r (f [x b]) c))
+      r
+      (range a1 (inc a2)))))
+
+(defn- hlin-fn
+  [r x1 x2 y c]
+  (lin r x1 x2 y c identity))
 
 (defn hlin
   "Plots a horizontal line from x1 to x2 at a given y.
@@ -98,7 +103,12 @@
   The x and y numbers must be between 0 and 39."
   [x1 x2 y]
   {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
-  (lin x1 x2 y identity))
+  (swap! raster hlin-fn x1 x2 y (get-current-color))
+  nil)
+
+(defn- vlin-fn
+  [r y1 y2 x c]
+  (lin r y1 y2 x c reverse))
 
 (defn vlin
   "Plots a vertical line from y1 to y2 at a given x.
@@ -106,7 +116,12 @@
   The x and y numbers must be between 0 and 39."
   [y1 y2 x]
   {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
-  (lin y1 y2 x reverse))
+  (swap! raster vlin-fn y1 y2 x (get-current-color))
+  nil)
+
+(defn- scrn-fn
+  [r x y]
+  (get-in r [x y]))
 
 (defn scrn
   "Gets the color at a given x and y.
@@ -114,7 +129,7 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (get-in @raster [x y]))
+  (scrn-fn @raster x y))
 
 (defn- make-panel
   [raster]
