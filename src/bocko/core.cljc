@@ -28,17 +28,30 @@
    :aqua        [98 246 153]
    :white       [255 255 254]})
 
-(defonce ^:private panel
-  (delay
-    (do
-      (require 'bocko.swing)
-      (let [make-panel (eval 'bocko.swing/make-panel)]
-        (make-panel color-map raster width height pixel-width pixel-height)))))
+(defonce ^:private create-canvas-fn (atom nil))
+
+(defn set-create-canvas
+  "Sets a function that creates a 'canvas'. The function will
+  be passed the color-map, the raster atom, and raster width and
+  height and desires pixel-width and pixel-height."
+  [f]
+  (reset! create-canvas-fn f))
+
+(defonce ^:private canvas
+  (delay (@create-canvas-fn color-map raster width height pixel-width pixel-height)))
+
+;; If we are in Clojure, set up a Swing canvas
+#?(:clj
+   (set-create-canvas
+     (fn [color-map raster width height pixel-width pixel-height]
+       (require 'bocko.swing)
+       (let [make-panel (eval 'bocko.swing/make-panel)]
+         (make-panel color-map raster width height pixel-width pixel-height)))))
 
 (defn clear
   "Clears this screen."
   []
-  (force panel)
+  (force canvas)
   (reset! raster clear-screen)
   nil)
 
@@ -64,10 +77,11 @@
               :dark-green :dark-gray :medium-blue :light-blue
               :brown :orange :light-gray :pink
               :light-green :yellow :aqua :white})]}
-  (force panel)
-  (if (thread-bound? #'*color*)
-    (set! *color* c)
-    (alter-var-root #'*color* (constantly c)))
+  (force canvas)
+  #?(:clj  (if (thread-bound? #'*color*)
+             (set! *color* c)
+             (alter-var-root #'*color* (constantly c)))
+     :cljs (set! *color* c))
   nil)
 
 (defn- plot*
@@ -80,7 +94,7 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (force panel)
+  (force canvas)
   (swap! raster plot* x y *color*)
   nil)
 
@@ -103,7 +117,7 @@
   The x and y numbers must be between 0 and 39."
   [x1 x2 y]
   {:pre [(integer? x1) (integer? x2) (integer? y) (<= 0 x1 39) (<= 0 x2 39) (<= 0 y 39)]}
-  (force panel)
+  (force canvas)
   (swap! raster hlin* x1 x2 y *color*)
   nil)
 
@@ -117,7 +131,7 @@
   The x and y numbers must be between 0 and 39."
   [y1 y2 x]
   {:pre [(integer? y1) (integer? y2) (integer? x) (<= 0 y1 39) (<= 0 y2 39) (<= 0 x 39)]}
-  (force panel)
+  (force canvas)
   (swap! raster vlin* y1 y2 x *color*)
   nil)
 
@@ -131,5 +145,5 @@
   Both x and y must be between 0 and 39."
   [x y]
   {:pre [(integer? x) (integer? y) (<= 0 x 39) (<= 0 y 39)]}
-  (force panel)
+  (force canvas)
   (scrn* @raster x y))
