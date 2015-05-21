@@ -1,6 +1,6 @@
 # Bocko
 
-A small library making it extremely simple to play around with low-res graphics from Clojure. (As well as [ClojureScript / iOS](https://github.com/mfikes/bocko-ios).)
+A small library making it extremely simple to play around with low-res graphics from Clojure. (As well as from ClojureScript on [iOS](https://github.com/mfikes/bocko-ios) and an [HTML canvas](https://github.com/mfikes/bocko-canvas).
 
 # Usage
 
