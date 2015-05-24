@@ -2,6 +2,8 @@
 
 A small library making it extremely simple to play around with low-res graphics from Clojure. (As well as from ClojureScript on [iOS](https://github.com/mfikes/bocko-ios) and an [HTML canvas](https://github.com/mfikes/bocko-canvas)).
 
+<img src="bocko.jpg" width="500px" hspace="5px"/>
+
 # Usage
 
 [![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
