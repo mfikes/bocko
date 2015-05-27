@@ -12,6 +12,8 @@ lein new bocko my-project
 
 Then find a short README.md at the top-level of the generated project, explaining how to get up and running.
 
+# Detailed Usage
+
 [![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
 
 ```clojure
