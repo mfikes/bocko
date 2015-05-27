@@ -6,6 +6,12 @@ A small library making it extremely simple to play around with low-res graphics 
 
 # Usage
 
+```
+lein new bocko my-project
+```
+
+Then find a short README.md at the top-level of the generated project, explaining how to get up and running.
+
 [![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
 
 ```clojure
