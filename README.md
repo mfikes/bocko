@@ -14,8 +14,6 @@ Then find a short README.md at the top-level of the generated project, explainin
 
 # Detailed Usage
 
-[![Clojars Project](http://clojars.org/bocko/latest-version.svg)](http://clojars.org/bocko)
-
 ```clojure
 (require '[bocko.core :refer :all])
 
