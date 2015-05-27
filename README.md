@@ -10,7 +10,7 @@ A small library making it extremely simple to play around with low-res graphics 
 lein new bocko my-project
 ```
 
-Then find a short README.md at the top-level of the generated project, explaining how to get up and running.
+Then find a short `README.md` at the top-level of the generated project, explaining how to get up and running.
 
 # Detailed Usage
 
