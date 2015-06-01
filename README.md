@@ -1,6 +1,6 @@
 # Bocko
 
-A small library making it extremely simple to play around with low-res graphics from Clojure. (As well as from ClojureScript on [iOS](https://github.com/mfikes/bocko-ios), [Android](https://github.com/nvbn/bocko-android)<sup>[1](#bockoandroid)</sup> and an [HTML canvas](https://github.com/mfikes/bocko-canvas)).
+A small library making it extremely simple to play around with low-res graphics from Clojure. (As well as from ClojureScript on [iOS](https://github.com/mfikes/bocko-ios), [Android](https://github.com/nvbn/bocko-android)<sup>[1](#bockoandroid)</sup>, and an [HTML canvas](https://github.com/mfikes/bocko-canvas)).
 
 <img src="bocko.jpg" width="400px" hspace="5px"/>
 
@@ -252,4 +252,4 @@ Distributed under the Eclipse Public License, which is also used by Clojure.
 
 # Footnotes
 
-<a name="bockoandroid">1</a>: Bocko on Android is by Vladimir Iakovlev
+<a name="bockoandroid">1</a>: Bocko for Android is by Vladimir Iakovlev.
