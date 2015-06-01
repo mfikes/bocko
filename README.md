@@ -252,4 +252,4 @@ Distributed under the Eclipse Public License, which is also used by Clojure.
 
 # Footnotes
 
-<a name="bockoandroid">1</a>: Bocko for Android is by Vladimir Iakovlev.
+<a name="bockoandroid">1</a>: Bocko for Android is by [Vladimir Iakovlev](https://github.com/nvbn).
