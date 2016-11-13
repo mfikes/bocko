@@ -3,4 +3,4 @@
   :url "https://github.com/mfikes/bocko"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-beta3"]])
+  :dependencies [[org.clojure/clojure "1.8.0"]])
